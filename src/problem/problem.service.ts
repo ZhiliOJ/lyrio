@@ -45,6 +45,7 @@ import {
 
 export enum ProblemPermissionType {
   View = "View",
+  DownloadTestData = "DownloadTestData",
   Modify = "Modify",
   ManagePermission = "ManagePermission",
   ManagePublicness = "ManagePublicness",
@@ -52,6 +53,7 @@ export enum ProblemPermissionType {
 }
 
 export enum ProblemPermissionLevel {
+  Limited = 0,
   Read = 1,
   Write = 2
 }
@@ -155,8 +157,23 @@ export class ProblemService {
   ): Promise<boolean> {
     switch (type) {
       // Everyone can view a public problem
-      // Owner, admins and those who has read permission can view a non-public problem
+      // Owner, admins and those who has limited permission can view a non-public problem
       case ProblemPermissionType.View:
+        if (problem.isPublic) return true;
+        if (user && user.id === problem.ownerId) return true;
+        if (hasPrivilege ?? (await this.userPrivilegeService.userHasPrivilege(user, UserPrivilegeType.ManageProblem)))
+          return true;
+        else
+          return await this.permissionService.userOrItsGroupsHavePermission(
+            user,
+            problem.id,
+            PermissionObjectType.Problem,
+            ProblemPermissionLevel.Limited
+          );
+
+      // Everyone can view a public problem
+      // Owner, admins and those who has read permission can view a non-public problem
+      case ProblemPermissionType.DownloadTestData:
         if (problem.isPublic) return true;
         if (user && user.id === problem.ownerId) return true;
         if (hasPrivilege ?? (await this.userPrivilegeService.userHasPrivilege(user, UserPrivilegeType.ManageProblem)))
@@ -246,8 +263,10 @@ export class ProblemService {
       PermissionObjectType.Problem
     );
     const result: ProblemPermissionType[] = [];
-    if (problem.isPublic || permissionLevel >= ProblemPermissionLevel.Read || problem.ownerId === user.id)
+    if (problem.isPublic || permissionLevel >= ProblemPermissionLevel.Limited || problem.ownerId === user.id)
       result.push(ProblemPermissionType.View);
+    if (problem.isPublic || permissionLevel >= ProblemPermissionLevel.Read || problem.ownerId === user.id)
+      result.push(ProblemPermissionType.DownloadTestData);
     if (
       (problem.ownerId === user.id || permissionLevel >= ProblemPermissionLevel.Write) &&
       (!problem.isPublic || this.configService.config.preference.security.allowNonPrivilegedUserEditPublicProblem)
