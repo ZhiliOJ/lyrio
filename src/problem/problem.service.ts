@@ -53,9 +53,9 @@ export enum ProblemPermissionType {
 }
 
 export enum ProblemPermissionLevel {
-  Limited = 0,
-  Read = 1,
-  Write = 2
+  Limited = 1,
+  Read = 2,
+  Write = 3
 }
 
 /**
