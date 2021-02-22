@@ -191,7 +191,7 @@ export class SubmissionService implements JudgeTaskService<SubmissionProgress, S
           return await this.problemService.userHasPermission(
             user,
             problem ?? (await this.problemService.findProblemById(submission.problemId)),
-            ProblemPermissionType.View,
+            ProblemPermissionType.TestData,
             hasPrivilege
           );
         return await this.problemService.userHasPermission(

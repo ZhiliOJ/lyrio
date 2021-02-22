@@ -45,7 +45,7 @@ import {
 
 export enum ProblemPermissionType {
   View = "View",
-  DownloadTestData = "DownloadTestData",
+  TestData = "TestData",
   Modify = "Modify",
   ManagePermission = "ManagePermission",
   ManagePublicness = "ManagePublicness",
@@ -173,7 +173,7 @@ export class ProblemService {
 
       // Everyone can view a public problem
       // Owner, admins and those who has read permission can view a non-public problem
-      case ProblemPermissionType.DownloadTestData:
+      case ProblemPermissionType.TestData:
         if (problem.isPublic) return true;
         if (user && user.id === problem.ownerId) return true;
         if (hasPrivilege ?? (await this.userPrivilegeService.userHasPrivilege(user, UserPrivilegeType.ManageProblem)))
@@ -266,7 +266,7 @@ export class ProblemService {
     if (problem.isPublic || permissionLevel >= ProblemPermissionLevel.Limited || problem.ownerId === user.id)
       result.push(ProblemPermissionType.View);
     if (problem.isPublic || permissionLevel >= ProblemPermissionLevel.Read || problem.ownerId === user.id)
-      result.push(ProblemPermissionType.DownloadTestData);
+      result.push(ProblemPermissionType.TestData);
     if (
       (problem.ownerId === user.id || permissionLevel >= ProblemPermissionLevel.Write) &&
       (!problem.isPublic || this.configService.config.preference.security.allowNonPrivilegedUserEditPublicProblem)
