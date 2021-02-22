@@ -45,6 +45,7 @@ import { SubmissionBasicMetaDto } from "./dto";
 
 export enum SubmissionPermissionType {
   View = "View",
+  TestData = "TestData",
   Cancel = "Cancel",
   Rejudge = "Rejudge",
   ManagePublicness = "ManagePublicness",
@@ -174,6 +175,25 @@ export class SubmissionService implements JudgeTaskService<SubmissionProgress, S
         if (submission.isPublic) return true;
         if (!user) return false;
         if (user.id === submission.submitterId) return true;
+        return await this.problemService.userHasPermission(
+          user,
+          problem ?? (await this.problemService.findProblemById(submission.problemId)),
+          ProblemPermissionType.Modify,
+          hasPrivilege
+        );
+
+      // Everyone can view test data of a public submission
+      // Those who has `limited` permission of the submission's problem cannot view test data
+      case SubmissionPermissionType.ShowTestData:
+        if (submission.isPublic) return true;
+        if (!user) return false;
+        if (user.id === submission.submitterId)
+          return await this.problemService.userHasPermission(
+            user,
+            problem ?? (await this.problemService.findProblemById(submission.problemId)),
+            ProblemPermissionType.View,
+            hasPrivilege
+          );
         return await this.problemService.userHasPermission(
           user,
           problem ?? (await this.problemService.findProblemById(submission.problemId)),

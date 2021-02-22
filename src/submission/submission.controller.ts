@@ -270,6 +270,7 @@ export class SubmissionController {
       submitter,
       submissionDetail,
       progress,
+      permissionTestData,
       permissionRejudge,
       permissionCancel,
       permissionSetPublic,
@@ -278,6 +279,13 @@ export class SubmissionController {
       this.userService.findUserById(submission.submitterId),
       this.submissionService.getSubmissionDetail(submission),
       pending && this.submissionProgressService.getPendingSubmissionProgress(submission.id),
+      this.submissionService.userHasPermission(
+        currentUser,
+        submission,
+        SubmissionPermissionType.TestData,
+        problem,
+        hasPrivilege
+      ),
       this.submissionService.userHasPermission(
         currentUser,
         submission,
@@ -331,6 +339,7 @@ export class SubmissionController {
             type: SubmissionProgressSubscriptionType.Detail,
             submissionIds: [submission.id]
           }),
+      permissionTestData,
       permissionRejudge,
       permissionCancel,
       permissionSetPublic,

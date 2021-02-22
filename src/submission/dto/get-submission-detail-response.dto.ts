@@ -27,6 +27,9 @@ export class GetSubmissionDetailResponseDto {
   progressSubscriptionKey?: string;
 
   @ApiProperty()
+  permissionTestData?: boolean;
+
+  @ApiProperty()
   permissionRejudge?: boolean;
 
   @ApiProperty()
