@@ -184,7 +184,7 @@ export class SubmissionService implements JudgeTaskService<SubmissionProgress, S
 
       // Everyone can view test data of a public submission
       // Those who has `limited` permission of the submission's problem cannot view test data
-      case SubmissionPermissionType.ShowTestData:
+      case SubmissionPermissionType.TestData:
         if (submission.isPublic) return true;
         if (!user) return false;
         if (user.id === submission.submitterId)
