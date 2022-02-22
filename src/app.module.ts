@@ -24,6 +24,7 @@ import { DiscussionModule } from "./discussion/discussion.module";
 import { MigrationModule } from "./migration/migration.module";
 import { EventReportModule } from "./event-report/event-report.module";
 import { HomepageModule } from "./homepage/homepage.module";
+import { DM2ScoreModule } from "@/dm2/score.module";
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { HomepageModule } from "./homepage/homepage.module";
     forwardRef(() => DiscussionModule),
     forwardRef(() => EventReportModule),
     forwardRef(() => HomepageModule),
-    forwardRef(() => MigrationModule)
+    forwardRef(() => MigrationModule),
+    forwardRef(() => DM2ScoreModule)
   ],
   controllers: [AppController],
   providers: [AppService, ErrorFilter, RecaptchaFilter]
