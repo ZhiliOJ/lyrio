@@ -41,6 +41,7 @@ interface SubmissionProgressMessage {
 // TODO: This should be refactored if we add hack, custom judge, etc
 //       Maybe refactor to a general "task progress"
 @WebSocketGateway({
+  maxHttpBufferSize: 1e9,
   namespace: "submission-progress",
   path: "/api/socket",
   transports: ["websocket"],
@@ -194,6 +195,13 @@ export class SubmissionProgressGateway implements OnGatewayConnection, OnGateway
     await Promise.all(
       subscription.submissionIds.map(async submissionId => {
         const submission = await this.submissionService.findSubmissionById(submissionId);
+
+        // Submission deleted?
+        if (!submission) {
+          this.leaveRoom(client, this.getRoom(subscription.type, submissionId));
+          return;
+        }
+
         if (submission.status === SubmissionStatus.Pending) return;
 
         // This submission has already finished
